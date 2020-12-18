@@ -1,0 +1,15 @@
+unit_tests:
+  stage: test
+  before_script:
+  - docker rm --force $(docker ps --all --quiet) || true
+  - docker network rm $(docker network ls --quiet) || true
+  - docker volume rm $(docker volume ls --quiet) || true
+  - docker pull quay.io/maksymbilenko/oracle-12c
+  script:
+  - make start-oracle-xe
+  - sleep 300
+  - GOPROXY=direct make container-run/test/unit
+  after_script:
+  - docker rm --force $(docker ps --all --quiet) || true
+  - docker network rm $(docker network ls --quiet) || true
+  - docker volume rm $(docker volume ls --quiet) || true
