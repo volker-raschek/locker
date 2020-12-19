@@ -1,9 +1,11 @@
 package locker
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 )
 
 const (
@@ -20,6 +22,7 @@ const (
 var ErrIsLocked = errors.New("Is locked")
 
 type Oracle struct {
+	mu         sync.Mutex
 	dbIsLocked bool
 	sqlDBO     *sql.DB
 }
@@ -28,50 +31,41 @@ func (om *Oracle) Close() error {
 	return om.sqlDBO.Close()
 }
 
-func (om *Oracle) Lock() error {
-
+func (om *Oracle) Lock(ctx context.Context) error {
+	om.mu.Lock()
+	defer om.mu.Unlock()
 	if om.dbIsLocked {
 		return ErrIsLocked
 	}
 
-	tx, err := om.sqlDBO.Begin()
+	tx, err := om.sqlDBO.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("Unable to begin a transaction: %w", err)
 	}
+	defer tx.Rollback()
 
 	var cd interface{ Code() int }
 
-	_, err = tx.Exec("CREATE TABLE schema_lock (id NUMBER PRIMARY KEY)")
-	switch {
-	case errors.As(err, &cd) && cd.Code() == ORA00955:
-		break
-	case err != nil:
-		tx.Rollback()
-		return fmt.Errorf("Failed to create table schema_lock: %w", err)
-	default:
-		break
+	if _, err = tx.ExecContext(ctx, "CREATE TABLE schema_lock (id NUMBER PRIMARY KEY)"); err != nil {
+		if !(errors.As(err, &cd) && cd.Code() == ORA00955) {
+			return fmt.Errorf("Failed to create table schema_lock: %w", err)
+		}
 	}
 
-	_, err = tx.Exec("LOCK TABLE schema_lock IN EXCLUSIVE MODE NOWAIT")
-	switch {
-	case errors.As(err, &cd) && cd.Code() == ORA00054:
-		tx.Rollback()
-		return ErrIsLocked
-	case err != nil:
-		tx.Rollback()
+	if _, err = tx.ExecContext(ctx, "LOCK TABLE schema_lock IN EXCLUSIVE MODE NOWAIT"); err != nil {
+		if errors.As(err, &cd) && cd.Code() == ORA00054 {
+			return ErrIsLocked
+		}
 		return fmt.Errorf("Failed to lock table schema_lock: %w", err)
 	}
 
-	_, err = tx.Exec("INSERT INTO schema_lock (id) VALUES (1)")
-	switch {
-	case errors.As(err, &cd) && cd.Code() == ORA00001:
-		tx.Rollback()
-		return ErrIsLocked
-	case errors.As(err, &cd) && cd.Code() == ORA00054:
-		tx.Rollback()
-		return ErrIsLocked
-	case err != nil:
-		tx.Rollback()
+	if _, err = tx.ExecContext(ctx, "INSERT INTO schema_lock (id) VALUES (1)"); err != nil {
+		if errors.As(err, &cd) {
+			switch cd.Code() {
+			case ORA00001, ORA00054:
+				return ErrIsLocked
+			}
+		}
 		return fmt.Errorf("Failed to insert row into table schema_lock: %w", err)
 	}
 
@@ -80,27 +74,26 @@ func (om *Oracle) Lock() error {
 	return tx.Commit()
 }
 
-func (om *Oracle) Unlock() error {
-
-	tx, err := om.sqlDBO.Begin()
+func (om *Oracle) Unlock(ctx context.Context) error {
+	om.mu.Lock()
+	defer om.mu.Unlock()
+	tx, err := om.sqlDBO.BeginTx(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("Unable to begin a transaction: %w", err)
 	}
+	defer tx.Rollback()
 
 	var cd interface{ Code() int }
-	_, err = tx.Exec("LOCK TABLE schema_lock IN EXCLUSIVE MODE NOWAIT")
+	_, err = tx.ExecContext(ctx, "LOCK TABLE schema_lock IN EXCLUSIVE MODE NOWAIT")
 	switch {
 	case errors.As(err, &cd) && cd.Code() == ORA00054:
-		tx.Rollback()
 		return ErrIsLocked
 	case err != nil:
-		tx.Rollback()
-		return fmt.Errorf("Failed to lock table schema_lock: %w", err)
+		return fmt.Errorf("Failed to unlock table schema_lock: %w", err)
 	}
 
-	_, err = tx.Exec("DELETE FROM schema_lock WHERE id = 1")
+	_, err = tx.ExecContext(ctx, "DELETE FROM schema_lock WHERE id = 1")
 	if err != nil {
-		tx.Rollback()
 		return err
 	}
 
