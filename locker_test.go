@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"os"
+	"runtime"
 	"testing"
 	"time"
 
@@ -69,6 +70,7 @@ func TestLocker(t *testing.T) {
 			defer sqlDBO.Close()
 
 			go func(index int, sqlDBO *sql.DB) {
+				runtime.LockOSThread()
 				om := &Oracle{sqlDBO: sqlDBO}
 
 				if err != nil {
