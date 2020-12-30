@@ -4,8 +4,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-logfmt/logfmt v0.5.0 h1:TrB8swr/68K7m9CcGut2g3UOihhbcbiMAYiuTXdEih4=
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=
-github.com/godror/godror v0.22.3-0.20201218190500-7c9693137581 h1:3iYJfYI7XWJ/fnWiTHFRaCEl1IKF0op8usryiK22SqY=
-github.com/godror/godror v0.22.3-0.20201218190500-7c9693137581/go.mod h1:YlPoIf962ZZKPM5Xqa8NxmGgck39pi51tqAs+K3IaFM=
+github.com/godror/godror v0.22.3 h1:J8Vj1bLUS9mTawmCHouNjQ7y8z1LKlI3fqUUPyGKQjs=
+github.com/godror/godror v0.22.3/go.mod h1:YlPoIf962ZZKPM5Xqa8NxmGgck39pi51tqAs+K3IaFM=
 github.com/google/go-cmp v0.4.0 h1:xsAVV57WRhGj6kEIi8ReJzQlHHqcBYCElAvkovg3B/4=
 github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/kr/pretty v0.2.1 h1:Fmg33tUaq4/8ym9TJN1x7sLJnHVwhP33CNkpYV/7rwI=

@@ -28,13 +28,13 @@ container-run:
 	docker run \
 		--env DB_URL=${DB_URL} \
 		--env GOPROXY=direct \
-		--env DPI_DEBUG_LEVEL=30 \
+		--env DPI_DEBUG_LEVEL=0 \
 		--volume $(shell pwd):/workspace \
 		--volume /var/run/docker.sock:/var/run/docker.sock \
 		--net=host \
 		--workdir /workspace \
 		--rm \
-			docker.io/volkerraschek/build-image@sha256:cf3f61b821dacc5c938399cae7101a5122d153a837d0f15f72803a5cb7fc3640 \
+			docker.io/volkerraschek/build-image:latest \
 				make ${COMMAND}
 
 start-oracle-xe:

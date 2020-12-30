@@ -14,7 +14,6 @@ import (
 )
 
 func TestLocker(t *testing.T) {
-	// assert := assert.New(t)
 	req := require.New(t)
 
 	connectionString := os.Getenv("DB_URL")
