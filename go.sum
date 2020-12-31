@@ -6,6 +6,8 @@ github.com/go-logfmt/logfmt v0.5.0 h1:TrB8swr/68K7m9CcGut2g3UOihhbcbiMAYiuTXdEih
 github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG1KdI/P7A=
 github.com/godror/godror v0.22.3 h1:J8Vj1bLUS9mTawmCHouNjQ7y8z1LKlI3fqUUPyGKQjs=
 github.com/godror/godror v0.22.3/go.mod h1:YlPoIf962ZZKPM5Xqa8NxmGgck39pi51tqAs+K3IaFM=
+github.com/godror/godror v0.22.4-0.20201231093737-8411931c7261 h1:gFoRNcffRDmS32/1f0efb93UTvbFPIYORXhnIIVxYBs=
+github.com/godror/godror v0.22.4-0.20201231093737-8411931c7261/go.mod h1:YlPoIf962ZZKPM5Xqa8NxmGgck39pi51tqAs+K3IaFM=
 github.com/google/go-cmp v0.4.0 h1:xsAVV57WRhGj6kEIi8ReJzQlHHqcBYCElAvkovg3B/4=
 github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/kr/pretty v0.2.1 h1:Fmg33tUaq4/8ym9TJN1x7sLJnHVwhP33CNkpYV/7rwI=
